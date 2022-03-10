@@ -1,2 +1,3 @@
-# CampySA_SWA
-C. jejuni source attribution for Southern AB, 2022
+# Source attribution of *Campylobacter jejuni* from Southern Alberta, Canada
+
+This project describes additional analysis to accompany the manuscript detailing the attribution of source from clinical infection with *Campylobacter jejuni* in Alberta, Canada.
