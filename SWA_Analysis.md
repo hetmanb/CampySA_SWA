@@ -1,44 +1,40 @@
----
-title: "Source Attribution Analysis for C. jejuni from Southern Alberta, Canada"
-output: github_document
-author: Benjamin Hetman
-date: "`r format(Sys.Date())`"
----
+Source Attribution Analysis for C. jejuni from Southern Alberta, Canada
+================
+Benjamin Hetman
+2022-03-10
 
 # Source attribution analysis for *C. jejuni* from southern Alberta, Canada
 
 ## Step 0: Load libraries and custom functions
 
-For this step, it is often useful to write a separate helper file. It keeps the present workspace organized by reducing clutter. Here we'll use the `source()` command to call another file labelled `helper.R` which contains many of our custom functions.
+For this step, it is often useful to write a separate helper file. It
+keeps the present workspace organized by reducing clutter. Here we’ll
+use the `source()` command to call another file labelled `helper.R`
+which contains many of our custom functions.
 
-```{r source helper script, message=FALSE, warning=FALSE}
+``` r
 source("helper.R")
-
 ```
 
 ## Step 1: Load data from MS Excel file
 
-```{r load data}
-
+``` r
 campy_raw <- readxl::read_xlsx(here("DATA","SWA_data_for_attribution.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
-
 ```
 
 ------------------------------------------------------------------------
 
 ## Step 2: Verify data
 
-```{r explore and verify data}
-
+``` r
 campy_human <- campy_raw %>%  filter(Source == "Human")
 campy_nonhuman <- campy_raw %>%  filter(Source != "Human")
-
 ```
 
-Summarize the human data set by year, providing some descriptive statistics.
+Summarize the human data set by year, providing some descriptive
+statistics.
 
-```{r summarize human data}
-
+``` r
 # Summarize Human case data by year
 campy_human %>%
   group_by(Year) %>%  
@@ -58,8 +54,7 @@ campy_human %>%
 
 Summarize the non-human data, also by year.
 
-```{r summarize non-human data}
-
+``` r
 # Summarize Human case data by year
 campy_nonhuman %>%
   group_by(Year, Source) %>%  
@@ -75,20 +70,19 @@ campy_nonhuman %>%
     plot_chunk(value = subtype.size, type = "dens", col = "red")
   )) %>%
   set_caption("Summary of non-human C.jejuni isolates")  
-  
-  
 ```
 
 ## Step 3: Set up randomization for Source Attribution
 
- 
-Purpose of this analysis is to generate estimate and 95% confidence intervals surrounding the attribution of source for each unique subtype. 
+Purpose of this analysis is to generate estimate and 95% confidence
+intervals surrounding the attribution of source for each unique subtype.
 
-The objective will be to iterate through each unique subtype, and randomly sample a subset (i.e., subsample) to calculate
-the estimated primary source frequency, then calculate a confidence interval around that distribution. 
+The objective will be to iterate through each unique subtype, and
+randomly sample a subset (i.e., subsample) to calculate the estimated
+primary source frequency, then calculate a confidence interval around
+that distribution.
 
-```{r Monte Carlo Source Attribution analysis, fig.width=8}
-
+``` r
 f <- function(human.data, nonhuman.data, iterations) {
   # Initialize list to store results
   results_table <- tibble(
@@ -168,16 +162,15 @@ subtype.table <- f(campy_human, campy_nonhuman, 100)
 subtype.table <- arrange(subtype.table, desc(n.human))
 
 flextable(subtype.table)
-
-
 ```
 
 ## Step 4: Random draws from human population
 
-Next, we'll set up some random draws from the human isolates only, and use this to estimate the total proportion of human C. jejuni isolates attributable to Cattle, Chicken, and Water sources in S. Alberta
+Next, we’ll set up some random draws from the human isolates only, and
+use this to estimate the total proportion of human C. jejuni isolates
+attributable to Cattle, Chicken, and Water sources in S. Alberta
 
-```{r Random draws from  the human-dataset}
-
+``` r
 # Set up random sampler for human data only: 
 human_sampler <- function(human.data, subtype.data, iterations, sample.n){
   
@@ -203,17 +196,15 @@ human_sampler <- function(human.data, subtype.data, iterations, sample.n){
 
 sa.results <- human_sampler(campy_human, subtype.table, 30, 500)
 flextable(sa.results)
-
 ```
 
 ## Step 5: Plot the human data for S. Alberta
 
-Finally, we'll want to actually visualize the results. 
-The first code chunk here will reconfigure the data into a format more suitable for plotting.
-Then, we'll use a separate chunk to actually draw the chart. 
+Finally, we’ll want to actually visualize the results. The first code
+chunk here will reconfigure the data into a format more suitable for
+plotting. Then, we’ll use a separate chunk to actually draw the chart.
 
-```{r Setup data for plotting}
-
+``` r
 start.df <- 
  sa.results %>%
   mutate(across(Chicken:Water.high, ~ .x / n.human.x)) %>% 
@@ -248,8 +239,7 @@ plot.df <- bind_rows(chicken.df, cattle.df, water.df) %>%
   mutate(Source = factor(Source, levels = c("Water", "Chicken", "Cattle")))
 ```
 
-```{r Plot the data, fig.height=7.5, fig.width=10}
-
+``` r
 ggplot(plot.df, aes(x = Index, y = Mean)) + 
   geom_bar(stat = "identity", aes(fill = Source), color = "black", width=1) +
   geom_errorbar(aes(x = Index, ymin=Low, ymax=High), color = "black", width = 0.2) +
@@ -260,23 +250,6 @@ ggplot(plot.df, aes(x = Index, y = Mean)) +
        y = "Proportion",
        x = "Random Draw") +
   scale_fill_manual(values = c("#67727e","#d4674c", "#a8a355"))
-
-
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![](SWA_Analysis_files/figure-gfm/Plot%20the%20data-1.png)<!-- -->
