@@ -152,15 +152,15 @@ f <- function(human.data, nonhuman.data, iterations) {
       ci.low.water <- mean.water - 1.96*(sd.water/sqrt(length(x$n.Water)))
      #----------------------------------------------------------------------------
       # Store results in final table:
-      results_table[results_table$subtype == j,]$Chicken = round(mean.chicken/n, 2)
-      results_table[results_table$subtype == j,]$Chicken.high = round(ci.hi.chicken/n, 2)
-      results_table[results_table$subtype == j,]$Chicken.low = round(ci.low.chicken/n, 2)
-      results_table[results_table$subtype == j,]$Cattle = round(mean.cattle/n, 2)
-      results_table[results_table$subtype == j,]$Cattle.high =  round(ci.hi.cattle/n, 2)
-      results_table[results_table$subtype == j,]$Cattle.low = round(ci.low.cattle/n, 2)
-      results_table[results_table$subtype == j,]$Water =  round(mean.water/n, 2)
-      results_table[results_table$subtype == j,]$Water.high = round(ci.hi.water/n, 2)
-      results_table[results_table$subtype == j,]$Water.low = round(ci.low.water/n, 2)
+      results_table[results_table$subtype == j,]$Chicken = round(mean.chicken/n, 3)
+      results_table[results_table$subtype == j,]$Chicken.high = round(ci.hi.chicken/n, 3)
+      results_table[results_table$subtype == j,]$Chicken.low = round(ci.low.chicken/n, 3)
+      results_table[results_table$subtype == j,]$Cattle = round(mean.cattle/n, 3)
+      results_table[results_table$subtype == j,]$Cattle.high =  round(ci.hi.cattle/n, 3)
+      results_table[results_table$subtype == j,]$Cattle.low = round(ci.low.cattle/n, 3)
+      results_table[results_table$subtype == j,]$Water =  round(mean.water/n, 3)
+      results_table[results_table$subtype == j,]$Water.high = round(ci.hi.water/n, 3)
+      results_table[results_table$subtype == j,]$Water.low = round(ci.low.water/n, 3)
   }
 return(results_table)
 }
