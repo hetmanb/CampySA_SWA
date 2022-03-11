@@ -23,6 +23,7 @@ pacman::p_load(tidyverse,
                ggpubr,
                flextable,
                clipr,
+               officer,
                here 
 )
 

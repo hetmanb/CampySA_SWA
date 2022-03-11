@@ -1,8 +1,10 @@
 ---
 title: "Source Attribution Analysis for C. jejuni from Southern Alberta, Canada"
-output: github_document
-author: Benjamin Hetman
+author: "Benjamin Hetman"
 date: "`r format(Sys.Date())`"
+output:
+  word_document: default
+  html_notebook: default
 ---
 
 # Source attribution analysis for *C. jejuni* from southern Alberta, Canada
@@ -206,8 +208,65 @@ flextable(sa.results)
 
 ```
 
-## Step 5: Plot the human data for S. Alberta
+## Step 5: Plot the data for S. Alberta
 
+### 5a Randomized draws from each subtype to estimate source 
+
+```{r} 
+
+subtype.df <- 
+ subtype.table %>%
+  filter(!is.na(Chicken)) %>% 
+  select(-n.human) %>%
+  arrange(desc(Cattle), desc(Chicken)) %>% 
+  rowid_to_column("Index") %>% 
+   group_by(subtype) %>% 
+   mutate(Chicken.low = Chicken.low + Cattle,
+         Chicken.high = Chicken.high + Cattle,
+         Water.low = Water.low + Chicken + Cattle,
+         Water.high = Water.high + Chicken + Cattle) %>% 
+  ungroup()
+
+  
+st.chicken.df <- subtype.df %>% 
+  select(subtype, Index, n.nonhuman, starts_with("Chicken")) %>%  
+  mutate(Source = "Chicken") %>% 
+  rename(c("subtype"="subtype", "Mean"="Chicken", "Low"="Chicken.low", "High"="Chicken.high", "Source"="Source"))
+
+st.cattle.df <- subtype.df %>% 
+  select(subtype, Index, n.nonhuman, starts_with("Cattle")) %>%  
+  mutate(Source = "Cattle") %>% 
+  rename(c("subtype"="subtype", "Mean"="Cattle", "Low"="Cattle.low", "High"="Cattle.high", "Source"="Source"))
+
+st.water.df <- subtype.df %>% 
+  select(subtype,Index, n.nonhuman, starts_with("Water")) %>%  
+  mutate(Source = "Water") %>% 
+  rename(c("subtype"="subtype", "Mean"="Water", "Low"="Water.low", "High"="Water.high", "Source"="Source"))
+  
+st.plot.df <- bind_rows(st.chicken.df, st.cattle.df, st.water.df) %>%  
+  mutate(Source = factor(Source, levels = c("Water", "Chicken", "Cattle")))
+
+  
+```
+
+
+```{r Plot the subtype source distributions and uncertainties, fig.height=7.5, fig.width=10}
+
+
+ggplot(st.plot.df, aes(x = reorder(subtype, Index) , y = Mean)) + 
+  geom_bar(stat = "identity", aes(fill = Source), color = "black", width=1) +
+  geom_errorbar(aes(x = subtype, ymin=Low, ymax=High), color = "black", width = 0.2) +
+  hrbrthemes::theme_ipsum() + 
+  labs(title = "Estimated source attribution for CGF subtypes from South Alberta, Canada",
+       subtitle = "(Randomized draws of 50% from each subtype, sampled 100 times)",
+       y = "Proportion",
+       x = "Subtype") +
+  theme(axis.text.x = element_text(angle = 90, size = 9, vjust = 0.5, )) +
+  scale_fill_manual(values = c("#67727e","#d4674c", "#a8a355"))
+
+```
+
+### 5b Randomized draws from Human dataset to estimate proportion attributable
 Finally, we'll want to actually visualize the results. 
 The first code chunk here will reconfigure the data into a format more suitable for plotting.
 Then, we'll use a separate chunk to actually draw the chart. 
