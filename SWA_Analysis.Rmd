@@ -3,8 +3,8 @@ title: "Source Attribution Analysis for C. jejuni from Southern Alberta, Canada"
 author: "Benjamin Hetman"
 date: "`r format(Sys.Date())`"
 output:
-  word_document: default
   html_notebook: default
+  word_document: default
 ---
 
 # Source attribution analysis for *C. jejuni* from southern Alberta, Canada
@@ -22,7 +22,14 @@ set.seed(900)
 
 ```{r load data}
 
-campy_raw <- readxl::read_xlsx(here("DATA","SWA_data_for_attribution.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
+#campy_raw <- readxl::read_xlsx(here("DATA","SWA_data_for_attribution.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
+#Dataset with isolates from SWA only: 
+#campy_raw <- readxl::read_xlsx(here("DATA","SWAhum_SWAnhum.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
+# Note: 2547 human isolates; 5405 non-human isolates
+
+#Dataset with isolates from SWA(Human) and full CGFdb (nonhuman)
+campy_raw <- readxl::read_xlsx(here("DATA","SWAhum_CGFnhum.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
+# Note: 2547 human isolates; 13188 non-human isolates
 
 ```
 
@@ -42,6 +49,7 @@ Summarize the human data set by year, providing some descriptive statistics.
 ```{r summarize human data}
 
 # Summarize Human case data by year
+# Note: the output of this filters out potential Year/Source combos with only 1 subtype 
 campy_human %>%
   group_by(Year) %>%  
   summarize(n.isolates = n(), 
@@ -51,6 +59,7 @@ campy_human %>%
             subtype.size = list(BCM95.SA.size[!is.na(BCM95.SA.size)]),
             .groups = "keep") %>%
   mutate(Year = as.factor(Year)) %>% 
+  filter(n.subtypes >1) %>% 
   flextable() %>%  
   compose(j="subtype.size", value = as_paragraph(
     plot_chunk(value = subtype.size, type = "dens", col = "blue")
@@ -63,6 +72,8 @@ Summarize the non-human data, also by year.
 ```{r summarize non-human data}
 
 # Summarize Human case data by year
+# Note: the output of this filters out potential Year/Source combos with only 1 subtype 
+
 campy_nonhuman %>%
   group_by(Year, Source) %>%  
   summarize(n.isolates = n(), 
@@ -71,8 +82,9 @@ campy_nonhuman %>%
             max.size = max(BCM95.SA.size, na.rm = TRUE),
             subtype.size = list(BCM95.SA.size[!is.na(BCM95.SA.size)]),
             .groups = "keep") %>%  
-  mutate(Year = as.factor(Year)) %>%  
-  flextable() %>%  
+  mutate(Year = as.factor(Year)) %>% 
+  filter(n.subtypes >1) %>% 
+  flextable() %>% 
   compose(j="subtype.size", value = as_paragraph(
     plot_chunk(value = subtype.size, type = "dens", col = "red")
   )) %>%
