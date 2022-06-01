@@ -3,8 +3,8 @@ title: "Source Attribution Analysis for C. jejuni from Southern Alberta, Canada"
 author: "Benjamin Hetman"
 date: "`r format(Sys.Date())`"
 output:
-  html_notebook: default
-  word_document: default
+  github_document
+
 ---
 
 # Source attribution analysis for *C. jejuni* from southern Alberta, Canada
@@ -24,11 +24,11 @@ set.seed(900)
 
 #campy_raw <- readxl::read_xlsx(here("DATA","SWA_data_for_attribution.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
 #Dataset with isolates from SWA only: 
-#campy_raw <- readxl::read_xlsx(here("DATA","SWAhum_SWAnhum.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
+campy_raw <- readxl::read_xlsx(here("DATA","SWAhum_SWAnhum.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
 # Note: 2547 human isolates; 5405 non-human isolates
 
 #Dataset with isolates from SWA(Human) and full CGFdb (nonhuman)
-campy_raw <- readxl::read_xlsx(here("DATA","SWAhum_CGFnhum.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
+#campy_raw <- readxl::read_xlsx(here("DATA","SWAhum_CGFnhum.xlsx"), sheet = 1, col_names = TRUE, guess_max = 1000, na=c("?", "#N/A"))
 # Note: 2547 human isolates; 13188 non-human isolates
 
 ```
