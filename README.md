@@ -1,4 +1,3 @@
-# Source attribution of *Campylobacter jejuni* from Southern Alberta, Canada
 
 This project describes additional analysis to accompany the manuscript detailing the attribution of source from clinical infection with *Campylobacter jejuni* in Alberta, Canada.
 
@@ -7,7 +6,6 @@ Source Attribution Analysis for C. jejuni from Southern Alberta, Canada
 Benjamin Hetman
 2022-06-01
 
-# Source attribution analysis for *C. jejuni* from southern Alberta, Canada
 
 ## Step 0: Load libraries and custom functions
 
